@@ -3,15 +3,26 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Icon from '@/components/ui/icon';
 
 export default function Index() {
   const [activeSection, setActiveSection] = useState('home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const scrollToSection = (id: string) => {
     setActiveSection(id);
+    setMobileMenuOpen(false);
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const menuItems = [
+    { id: 'home', label: 'Главная', icon: 'Home' },
+    { id: 'catalog', label: 'Каталог', icon: 'ShoppingBag' },
+    { id: 'reviews', label: 'Отзывы', icon: 'MessageSquare' },
+    { id: 'faq', label: 'FAQ', icon: 'HelpCircle' },
+    { id: 'contacts', label: 'Контакты', icon: 'Phone' }
+  ];
 
   const plans = [
     {
@@ -80,23 +91,74 @@ export default function Index() {
 
   return (
     <div className="min-h-screen">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-primary/20 shadow-lg shadow-primary/5">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icon name="Star" className="w-8 h-8 text-primary fill-primary" />
-            <span className="text-2xl font-bold text-gradient">TeleStars</span>
+            <Icon name="Star" className="w-8 h-8 text-primary fill-primary drop-shadow-[0_0_10px_rgba(255,215,0,0.5)]" />
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-yellow-400 bg-clip-text text-transparent">TeleStars</span>
           </div>
+          
           <div className="hidden md:flex items-center gap-6">
-            <button onClick={() => scrollToSection('home')} className="text-sm hover:text-primary transition-colors">Главная</button>
-            <button onClick={() => scrollToSection('catalog')} className="text-sm hover:text-primary transition-colors">Каталог</button>
-            <button onClick={() => scrollToSection('reviews')} className="text-sm hover:text-primary transition-colors">Отзывы</button>
-            <button onClick={() => scrollToSection('faq')} className="text-sm hover:text-primary transition-colors">FAQ</button>
-            <button onClick={() => scrollToSection('contacts')} className="text-sm hover:text-primary transition-colors">Контакты</button>
+            {menuItems.map((item) => (
+              <button 
+                key={item.id}
+                onClick={() => scrollToSection(item.id)} 
+                className={`text-sm font-medium transition-all duration-300 hover:text-primary relative group ${
+                  activeSection === item.id ? 'text-primary' : ''
+                }`}
+              >
+                {item.label}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+              </button>
+            ))}
           </div>
-          <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold">
-            <Icon name="MessageCircle" className="w-4 h-4 mr-2" />
-            Связаться
-          </Button>
+
+          <div className="flex items-center gap-3">
+            <Button className="hidden sm:flex bg-gradient-to-r from-primary via-yellow-400 to-primary text-primary-foreground hover:shadow-lg hover:shadow-primary/50 font-semibold transition-all duration-300 hover:scale-105">
+              <Icon name="MessageCircle" className="w-4 h-4 mr-2" />
+              Связаться
+            </Button>
+
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden border border-primary/30 hover:border-primary hover:bg-primary/10">
+                  <Icon name="Menu" className="w-6 h-6 text-primary" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[280px] bg-gradient-to-b from-background to-card border-l border-primary/30">
+                <div className="flex flex-col gap-6 mt-8">
+                  <div className="flex items-center gap-2 pb-6 border-b border-primary/20">
+                    <Icon name="Star" className="w-8 h-8 text-primary fill-primary" />
+                    <span className="text-xl font-bold bg-gradient-to-r from-primary to-yellow-400 bg-clip-text text-transparent">TeleStars</span>
+                  </div>
+
+                  <nav className="flex flex-col gap-3">
+                    {menuItems.map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => scrollToSection(item.id)}
+                        className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 ${
+                          activeSection === item.id 
+                            ? 'bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/50 text-primary shadow-lg shadow-primary/20' 
+                            : 'hover:bg-primary/5 border border-transparent hover:border-primary/30'
+                        }`}
+                      >
+                        <Icon name={item.icon as any} className="w-5 h-5" />
+                        <span className="font-semibold">{item.label}</span>
+                      </button>
+                    ))}
+                  </nav>
+
+                  <div className="mt-auto pt-6 border-t border-primary/20">
+                    <Button className="w-full bg-gradient-to-r from-primary via-yellow-400 to-primary text-primary-foreground hover:shadow-xl hover:shadow-primary/50 font-bold py-6">
+                      <Icon name="MessageCircle" className="w-5 h-5 mr-2" />
+                      Связаться с нами
+                    </Button>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </nav>
 
